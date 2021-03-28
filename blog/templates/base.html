@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if title %}
+    <title>{{ title }} - Blog</title>
+    {% else %}
+    <title>Welcome To Blog</title>
+    {% endif %}
+</head>
+<body>
+{% block pagetitle %}<h1>{{title}}</h1>{% endblock pagetitle %}
+<div>
+    <a href="{{ url_for('login') }}">LOGIN</a>
+    <a href="{{ url_for('index') }}">HOME</a>
+</div>
+<hr>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class=flashes>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+     {% endif %}
+{% endwith %}
+{% block content %}{% endblock content %}
+</body>
+</html>

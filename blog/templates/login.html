@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    {% for field in form if field.name not in ['csrf_token', 'remember_me', 'submit'] %}
+    <p>
+        {{field.label}}<br>
+        {{field()}}<br>
+        {% for error in field.errors %}
+        <span style="color : red">{{error}}</span>
+        {% endfor %}
+    </p>
+    {% endfor %}
+    <p>{{form.remember_me()}} {{form.remember_me.label}}</p>
+    <p>{{form.submit()}}</p>
+</form>
+{% endblock content %}
