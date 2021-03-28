@@ -1,1 +1,6 @@
 {% extends 'base.html' %}
+{% block content %}
+    {% for post in posts %}
+    <p>{{ post.body }} - {{ post.timestamp| }} by {{ post.author }}</p>
+    {% endfor %}
+{% endblock content %}

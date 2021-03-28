@@ -1,11 +1,13 @@
 from flask import render_template, flash, redirect, url_for
 from blog import app
 from blog.forms import LoginForm
+from blog.models import *
 
 
 @app.route('/')
 def index():
-    return render_template('index.html', title='Home')
+    posts = Post.query.all()
+    return render_template('index.html', title='HOME', posts=posts)
 
 
 @app.route('/login', methods=['GET', 'POST'])
