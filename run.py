@@ -9,5 +9,6 @@ def make_shell_context():
         'Post': Post
     }
 
+
 if __name__ == '__main__':
     app.run(debug=True)

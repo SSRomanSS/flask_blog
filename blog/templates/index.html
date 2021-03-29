@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
+    <h1>Hi, {{ current_user.username }}!</h1>
     {% for post in posts %}
-    <p>{{ post.body }} - {{ post.timestamp| }} by {{ post.author }}</p>
+        <div><p><b>{{ post.body }}</b> - {{ post.timestamp.strftime('%m/%d/%Y, %H:%M:%S') }} by <b>{{ post.author.username }}</b></p></div>
     {% endfor %}
 {% endblock content %}

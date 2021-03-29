@@ -9,10 +9,16 @@
     {% endif %}
 </head>
 <body>
-{% block pagetitle %}<h1>{{title}}</h1>{% endblock pagetitle %}
 <div>
-    <a href="{{ url_for('login') }}">LOGIN</a>
-    <a href="{{ url_for('index') }}">HOME</a>
+    Microblog:
+    <a href="{{ url_for('index') }}">Home</a>
+    {% if current_user.is_anonymous %}
+    <a href="{{ url_for('login') }}">Login</a>
+    <a href="{{ url_for('register') }}">Registration</a>
+    {% else %}
+    <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+    {% endif %}
 </div>
 <hr>
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -24,6 +30,7 @@
         </ul>
      {% endif %}
 {% endwith %}
+{% block pagetitle %}<h1>{{title}}</h1>{% endblock pagetitle %}
 {% block content %}{% endblock content %}
 </body>
 </html>
