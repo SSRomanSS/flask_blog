@@ -12,6 +12,11 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+followed_followers = db.Table('followed_followers',
+                              db.Column('followed_id', db.Integer, db.ForeignKey('users.id')),
+                              db.Column('follower_id', db.Integer, db.ForeignKey('users.id')))
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +26,12 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(160))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    
+    followed = db.relationship('User',
+                               secondary=followed_followers,
+                               primaryjoin=(followed_followers.c.follower_id == id),
+                               secondaryjoin=(followed_followers.c.followed_id == id),
+                               backref=db.backref('followers', lazy='dynamic'),
+                               lazy='dynamic')
 
     def __repr__(self):
         return f'User {self.username} - {self.email}'
@@ -35,6 +45,24 @@ class User(UserMixin, db.Model):
     def get_avatar(self, size):
         avatar = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{avatar}?d=identicon&s={size}'
+
+    def is_following(self, user):
+        return self.followed.filter(followed_followers.c.followed_id == user.id).first()
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def get_followed_posts(self):
+        followed = Post.query.\
+            join(followed_followers, (followed_followers.c.followed_id == Post.user_id)).\
+            filter(followed_followers.c.follower_id == self.id)
+        own = Post.query.filter_by(user_id=self.id)
+        return followed.union(own).order_by(Post.timestamp.desc())
 
 
 class Post(db.Model):
