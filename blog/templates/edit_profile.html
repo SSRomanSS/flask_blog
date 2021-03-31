@@ -1,20 +1,10 @@
-{% extends 'base.html' %}
-{% block content %}
-<form action="" method="post" novalidate>
-    {{ form.hidden_tag() }}
-    {% for field in form if field.name not in ['csrf_token', 'submit'] %}
-    <p>
-        {{ field.label }}<br>
-        {% if field.name == 'about_me' %}
-            {{ field(cols=50, rows=5) }}<br>
-        {% else %}
-            {{ field() }}<br>
-        {% endif %}
-        {% for error in field.errors %}
-        <span style="color : red">{{error}}</span>
-        {% endfor %}
-    </p>
-    {% endfor %}
-    <p>{{form.submit()}}</p>
-</form>
-{% endblock content %}
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+{% endblock %}
