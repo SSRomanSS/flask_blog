@@ -10,11 +10,10 @@
                 <a href="{{ url_for('user', username=post.author.username) }}">
                     {{ post.author.username }}
                 </a>
-                says:
+                says {{ moment(post.timestamp).fromNow() }}:
                 <br>
                 <b>{{ post.body }}</b>
-                <br><br>
-                at: {{ post.timestamp.strftime('%m/%d/%Y, %H:%M:%S') }}
+                <br>
             </td>
         </tr>
     </table>
