@@ -1,3 +1,4 @@
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField, PasswordField, ValidationError, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, Email, Length
@@ -32,15 +33,13 @@ class EditProfileForm(FlaskForm):
     about_me = TextAreaField('About Me', validators=[Length(min=0, max=160)])
     submit = SubmitField('Submit')
 
-    def __init__(self, original_username, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.original_username = original_username
-
     def validate_username(self, username):
-        if username.data != self.original_username:
+        if username.data != current_user.username:
             user = User.query.filter_by(username=username.data).first()
             if user:
                 raise ValidationError('Username already exists')
+
+
 
 
 class PostForm(FlaskForm):

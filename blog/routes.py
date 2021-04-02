@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_babel import _
 from werkzeug.urls import url_parse
 
 from blog import app, db
@@ -24,7 +25,7 @@ def index():
         post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is live now!', 'info')
+        flash(_('Your post is live now!'), 'info')
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.get_followed_posts().paginate(page, app.config['POST_PER_PAGE'], False)
@@ -51,10 +52,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if not user or not user.check_password(form.password.data):
-            flash('Invalid username or password', 'danger')
+            flash('Invalid username or password', 'error')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        flash(f'Login successful for {user.username} ({user.email})', 'info')
+        flash(f'Login successful for {user.username} ({user.email})', 'success')
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
@@ -72,8 +73,9 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you successfully registered!', 'info')
+        flash('Congratulations, you successfully registered!', 'success')
         return redirect(url_for('index'))
+    form = RegisterForm()
     return render_template('register.html', title='Registration', form=form)
 
 
@@ -81,6 +83,7 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 
 @app.route('/user/<username>')
 @login_required
@@ -100,16 +103,12 @@ def user(username):
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm(current_user.username)
+    form = EditProfileForm(formdata=request.form, obj=current_user)
     if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.about_me = form.about_me.data
+        form.populate_obj(current_user)
         db.session.commit()
-        flash('Profile successfully updated', 'info')
+        flash('Profile successfully updated', 'success')
         return redirect(url_for('user', username=current_user.username))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
 
@@ -128,7 +127,7 @@ def follow(username):
         else:
             current_user.follow(user)
             db.session.commit()
-            flash(f'You are following {username}!', 'info')
+            flash(f'You are following {username}!', 'success')
             return redirect(url_for('user', username=username))
     else:
         return redirect(url_for('index'))
