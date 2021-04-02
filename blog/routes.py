@@ -50,7 +50,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data).first_or_404()
         if not user or not user.check_password(form.password.data):
             flash('Invalid username or password', 'error')
             return redirect(url_for('login'))
@@ -117,7 +117,7 @@ def edit_profile():
 def follow(username):
     form = EmptyForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first_or_404()
         if not user:
             flash(f'User {username} is not found', 'info')
             return redirect(url_for('index'))
@@ -138,7 +138,7 @@ def follow(username):
 def unfollow(username):
     form = EmptyForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first_or_404()
         if not user:
             flash(f'User {username} is not found', 'info')
             return redirect(url_for('index'))
