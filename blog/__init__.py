@@ -6,6 +6,8 @@ from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_babel import Babel, lazy_gettext as _l
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 from config import Config
 
@@ -31,7 +33,14 @@ manager.add_command('db', MigrateCommand)
 def get_locale():
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-from blog import routes, models, errors
+# from blog import routes, models, errors
+from blog.models import User, Post
+
+# Admin Panel
+admin = Admin(app)
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Post, db.session))
+
 
 
 
