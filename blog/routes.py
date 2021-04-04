@@ -31,6 +31,7 @@ def index():
     posts = current_user.get_followed_posts().paginate(page, app.config['POST_PER_PAGE'], False)
     next_url = url_for('index', page=posts.next_num) if posts.has_next else None
     prev_url = url_for('index', page=posts.prev_num) if posts.has_prev else None
+    app.logger.info('message')
     return render_template('index.html', posts=posts.items, form=form, next_url=next_url, prev_url=prev_url)
 
 

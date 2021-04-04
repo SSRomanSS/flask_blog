@@ -1,5 +1,5 @@
 from blog import app, db
-from blog import routes, models, errors
+from blog import routes, models, errors, set_logger
 
 
 @app.shell_context_processor
